@@ -1,10 +1,9 @@
-package course;
-import person.*;
+package university;
 
 public class Corso {
 	private String courseName;
 	private Persona professor;
-	private int []student=new int[100];
+	private int []student=new int[University.MAXS_PERC];
 	private int sc=0;
 	
 	public Corso(String courseName,String professor) {
@@ -21,7 +20,7 @@ public class Corso {
 	public String listAttendees(Persona[] student) {
 		String s="";
 		for(int i=0;i<this.sc;i++) {
-			s=s+this.student[i]+" "+student[this.student[i]-10000].getPerson()+"\n";
+			s=s+this.student[i]+" "+student[this.student[i]-University.STUDENT_OFFSET].getPerson()+"\n";
 		}
 		return s;
 	}
