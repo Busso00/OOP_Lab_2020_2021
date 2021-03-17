@@ -1,5 +1,7 @@
 package university;
 
+import person.*;
+import course.*;
 /**
  * This class represents a university education system.
  * 
@@ -7,13 +9,21 @@ package university;
  *
  */
 public class University {
-
+	
+	private String name;
+	private Persona rector;
+	private Persona[] student= new Persona [1000];
+	private Corso[] course=new Corso[50];
+	private int sc=0;
+	private int cc=0;
+	
 	/**
 	 * Constructor
 	 * @param name name of the university
 	 */
 	public University(String name){
 		//TODO: to be implemented
+		this.name=name;
 	}
 	
 	/**
@@ -23,7 +33,7 @@ public class University {
 	 */
 	public String getName(){
 		//TODO: to be implemented
-		return null;
+		return this.name;
 	}
 	
 	/**
@@ -34,6 +44,7 @@ public class University {
 	 */
 	public void setRector(String first, String last){
 		//TODO: to be implemented
+		this.rector=new Persona(first+" "+last);
 	}
 	
 	/**
@@ -43,7 +54,7 @@ public class University {
 	 */
 	public String getRector(){
 		//TODO: to be implemented
-		return null;
+		return this.rector.getPerson();
 	}
 	
 	/**
@@ -56,7 +67,8 @@ public class University {
 	 */
 	public int enroll(String first, String last){
 		//TODO: to be implemented
-		return -1;
+		student[sc++]=new Persona(first+" "+last);
+		return (sc-1+10000);
 	}
 	
 	/**
@@ -68,7 +80,8 @@ public class University {
 	 */
 	public String student(int id){
 		//TODO: to be implemented
-		return null;
+		
+		return (id+" "+student[id-10000].getPerson());
 	}
 	
 	/**
@@ -81,7 +94,8 @@ public class University {
 	 */
 	public int activate(String title, String teacher){
 		//TODO: to be implemented
-		return -1;
+		course[cc++]=new Corso(title,teacher);
+		return (cc-1+10);
 	}
 	
 	/**
@@ -97,7 +111,7 @@ public class University {
 	 */
 	public String course(int code){
 		//TODO: to be implemented
-		return null;
+		return code+","+course[code].getCourse();
 	}
 	
 	/**
@@ -107,6 +121,12 @@ public class University {
 	 */
 	public void register(int studentID, int courseCode){
 		//TODO: to be implemented
+		if((student[studentID-10000]!=null)&&(course[courseCode-10]!=null)) {
+			student[studentID-10000].addCourse(courseCode);
+			course[courseCode-10].addStudent(studentID);
+		}else {
+			System.out.println("lo studente e/o il corso non esiste/ono");
+		}
 	}
 	
 	/**
@@ -117,7 +137,7 @@ public class University {
 	 */
 	public String listAttendees(int courseCode){
 		//TODO: to be implemented
-		return null;
+		return course[courseCode-10].listAttendees(student);
 	}
 
 	/**
@@ -133,6 +153,7 @@ public class University {
 	 */
 	public String studyPlan(int studentID){
 		//TODO: to be implemented
-		return null;
+		return student[studentID-10000].studyPlan(course);
 	}
 }
+
