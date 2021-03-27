@@ -1,4 +1,7 @@
 package university;
+
+import java.util.logging.Logger;
+
 /**
  * This class represents a university education system.
  * 
@@ -13,12 +16,12 @@ public class University {
 	static final int N_STUDENT = 1000;
 	static final int MAXC_PERS = 25;
 	static final int MAXS_PERC =100;
-	
+	private final static Logger logger = Logger.getLogger("University");
 	private String name;
 	private Persona rector;
-	private Persona[] student= new Persona [N_STUDENT];
-	private Corso[] course=new Corso[N_COURSE];
-	private int sc=0;
+	protected Persona[] student= new Persona [N_STUDENT];
+	protected Corso[] course=new Corso[N_COURSE];
+	protected int sc=0;
 	private int cc=0;
 	
 	/**
@@ -26,7 +29,6 @@ public class University {
 	 * @param name name of the university
 	 */
 	public University(String name){
-		//TODO: to be implemented
 		this.name=name;
 	}
 	
@@ -36,7 +38,6 @@ public class University {
 	 * @return name of university
 	 */
 	public String getName(){
-		//TODO: to be implemented
 		return this.name;
 	}
 	
@@ -46,8 +47,7 @@ public class University {
 	 * @param first
 	 * @param last
 	 */
-	public void setRector(String first, String last){
-		//TODO: to be implemented
+	public void setRector(String first, String last) {
 		this.rector=new Persona(first+" "+last);
 	}
 	
@@ -56,13 +56,12 @@ public class University {
 	 * 
 	 * @return name of the rector
 	 */
-	public String getRector(){
-		//TODO: to be implemented
+	public String getRector() {
 		return this.rector.getPerson();
 	}
 	
 	/**
-	 * Enrol a student in the university
+	 * Enroll a student in the university
 	 * 
 	 * @param first first name of the student
 	 * @param last last name of the student
@@ -70,8 +69,8 @@ public class University {
 	 * @return unique ID of the newly enrolled student
 	 */
 	public int enroll(String first, String last){
-		//TODO: to be implemented
 		student[sc++]=new Persona(first+" "+last);
+		logger.info("New student enrolled: "+(sc+STUDENT_OFFSET)+" "+first+" "+last);
 		return (sc-1+STUDENT_OFFSET);
 	}
 	
@@ -83,8 +82,6 @@ public class University {
 	 * @return information about the student
 	 */
 	public String student(int id){
-		//TODO: to be implemented
-		
 		return (id+" "+student[id-STUDENT_OFFSET].getPerson());
 	}
 	
@@ -97,8 +94,8 @@ public class University {
 	 * @return the unique code assigned to the course
 	 */
 	public int activate(String title, String teacher){
-		//TODO: to be implemented
 		course[cc++]=new Corso(title,teacher);
+		logger.info("New course activated: "+(cc+COURSE_OFFSET)+","+title+" "+teacher);
 		return (cc-1+COURSE_OFFSET);
 	}
 	
@@ -114,7 +111,6 @@ public class University {
 	 * @return information about the course
 	 */
 	public String course(int code){
-		//TODO: to be implemented
 		return code+","+course[code].getCourse();
 	}
 	
@@ -124,10 +120,10 @@ public class University {
 	 * @param courseCode id of the course
 	 */
 	public void register(int studentID, int courseCode){
-		//TODO: to be implemented
 		if((student[studentID-STUDENT_OFFSET]!=null)&&(course[courseCode-COURSE_OFFSET]!=null)) {
 			student[studentID-STUDENT_OFFSET].addCourse(courseCode);
 			course[courseCode-COURSE_OFFSET].addStudent(studentID);
+			logger.info("Student "+studentID+" signed up for course "+courseCode);
 		}else {
 			System.out.println("lo studente e/o il corso non esiste/ono");
 		}
@@ -140,7 +136,6 @@ public class University {
 	 * @return list of attendees separated by "\n"
 	 */
 	public String listAttendees(int courseCode){
-		//TODO: to be implemented
 		return course[courseCode-COURSE_OFFSET].listAttendees(student);
 	}
 
@@ -156,7 +151,6 @@ public class University {
 	 * @return the list of courses the student is registered for
 	 */
 	public String studyPlan(int studentID){
-		//TODO: to be implemented
 		return student[studentID-STUDENT_OFFSET].studyPlan(course);
 	}
 }

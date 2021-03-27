@@ -1,5 +1,4 @@
 package university;
-
 import java.util.logging.Logger;
 
 /**
@@ -25,7 +24,9 @@ public class UniversityExt extends University {
 	 * @param grade		grade ( 0-30)
 	 */
 	public void exam(int studentId, int courseID, int grade) {
-		
+		student[studentId-University.STUDENT_OFFSET].addExam(studentId, grade,courseID);
+		course[courseID-University.COURSE_OFFSET].addExam(studentId, grade,courseID);
+		logger.info("Student "+studentId+" took an exam in course "+courseID+" with grade "+grade);
 	}
 
 	/**
@@ -41,7 +42,11 @@ public class UniversityExt extends University {
 	 * @return the average grade formatted as a string.
 	 */
 	public String studentAvg(int studentId) {
-		return null;
+		Persona s=student[studentId-University.STUDENT_OFFSET];
+		if(s.calcAvg()!=-1) {
+			return "Student "+studentId+" : "+s.calcAvg();
+		}
+		return "Student "+studentId+" hasn't taken any exams";
 	}
 	
 	/**
@@ -56,7 +61,11 @@ public class UniversityExt extends University {
 	 * @return the course average formatted as a string
 	 */
 	public String courseAvg(int courseId) {
-		return null;
+		Corso c=course[courseId-University.COURSE_OFFSET];
+		if(c.calcAvg()!=-1) {
+			return "The average for the course "+c.getCourseName()+" is: "+c.calcAvg();
+		}
+		return "No student has taken the exam in "+c.getCourseName();
 	}
 	
 	/**
@@ -74,7 +83,37 @@ public class UniversityExt extends University {
 	 * 
 	 * @return info of the best three students.
 	 */
-	public String topThreeStudents() {
-		return null;
+	
+	public String topThreeStudents(){
+		int j=0;
+		int P=0;
+		int temp=0;
+		int[] points= {0,0,0};
+		int[] studMatr= {-1,-1,-1};//noOFFSET
+		String res="";
+		for(int i=0;i<sc;i++){
+			P=student[i].calculateScore();
+			for(j=2;(j>=0)&&(P>points[j]);j--) {
+				if(j==2) {
+					points[j]=P;
+					studMatr[j]=i;
+				}else {
+					temp=points[j+1];
+					points[j+1]=points[j];
+					points[j]=temp;
+					
+					temp=studMatr[j+1];
+					studMatr[j+1]=studMatr[j];
+					studMatr[j]=temp;
+				}
+			}
+			
+		}
+		for(j=0;j<3;j++) {
+			if(studMatr[j]>=0) {
+				res+=student[studMatr[j]].getPerson()+" : "+points[j]+"\n";
+			}
+		}
+		return res;
 	}
 }
