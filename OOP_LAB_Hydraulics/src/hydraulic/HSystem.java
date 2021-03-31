@@ -58,7 +58,7 @@ public class HSystem {
 			}
 			if(e instanceof Tap) {
 					if(!(((Tap) e).open))
-					outFlow[0]=obs.NO_FLOW;
+					outFlow[0]=0.0;
 				}
 			if(e instanceof Source) {
 				obs.notifyFlow(e.getClass().toString(),e.getName() , obs.NO_FLOW, outFlow);

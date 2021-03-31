@@ -11,7 +11,6 @@ public class Tap extends Element {
 	boolean open;
 	public Tap(String name) {
 		super(name);
-		//TODO: complete
 	}
 	
 	/**

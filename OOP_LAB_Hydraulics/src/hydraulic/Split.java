@@ -15,7 +15,6 @@ public class Split extends Element {
 	 */
 	public Split(String name) {
 		super(name);
-		//TODO: complete
 	}
     
 	/**
