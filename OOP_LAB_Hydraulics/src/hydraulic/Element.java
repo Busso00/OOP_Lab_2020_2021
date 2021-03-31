@@ -8,13 +8,15 @@ package hydraulic;
  * using the method {@link #connect(Element) connect()}.
  */
 public abstract class Element {
-	
+	private String name;
+	double flow;
+	private Element connEl1;
 	/**
 	 * Constructor
 	 * @param name the name of the element
 	 */
 	public Element(String name){
-		// TODO: to be implemented
+		this.name=name;
 	}
 
 	/**
@@ -22,8 +24,7 @@ public abstract class Element {
 	 * @return the name of the element
 	 */
 	public String getName(){
-		// TODO: to be implemented
-		return null;
+		return this.name;
 	}
 	
 	/**
@@ -32,7 +33,7 @@ public abstract class Element {
 	 * @param elem the element that will be placed downstream
 	 */
 	public void connect(Element elem){
-		// TODO: to be implemented
+		this.connEl1=elem;
 	}
 	
 	/**
@@ -40,8 +41,6 @@ public abstract class Element {
 	 * @return downstream element
 	 */
 	public Element getOutput(){
-		// TODO: to be implemented
-		return null;
+		return this.connEl1;
 	}
-	
 }

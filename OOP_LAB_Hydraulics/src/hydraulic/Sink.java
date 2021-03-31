@@ -15,4 +15,7 @@ public class Sink extends Element {
 		//TODO: complete
 	}
 	
+	public void connect() {
+		
+	}
 }

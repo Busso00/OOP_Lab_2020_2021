@@ -48,7 +48,7 @@ public class ExampleTest {
 		// 3) simulation parameters are then defined
 		src.setFlow(20);
 		r.setOpen(true);
-		
+	
 		// 4) simulation starts
 		PrintingObserver obs = new PrintingObserver(s);
 		s.simulate(obs);

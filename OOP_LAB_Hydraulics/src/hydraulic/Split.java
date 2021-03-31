@@ -8,7 +8,7 @@ package hydraulic;
  */
 
 public class Split extends Element {
-
+	private Element connEl2;
 	/**
 	 * Constructor
 	 * @param name
@@ -23,8 +23,10 @@ public class Split extends Element {
 	 * @return array containing the two downstream element
 	 */
     public Element[] getOutputs(){
-    		//TODO: complete
-        return null;
+    	Element[] v=new Element[2];
+    	v[0]=this.getOutput();
+    	v[1]=this.connEl2;
+        return v;
     }
 
     /**
@@ -35,6 +37,10 @@ public class Split extends Element {
      * @param noutput the output number to be used to connect the element
      */
 	public void connect(Element elem, int noutput){
-		//TODO: complete
+		if(noutput==0) {
+			this.connect(elem);
+		}else {
+			this.connEl2=elem;
+		}
 	}
 }
