@@ -7,7 +7,7 @@ public class Corso {
 	private Persona professor;
 	private int []student=new int[University.MAXS_PERC];
 	private int sc=0;
-	private Esami[] exams;
+	private Esami[] exams=new Esami[0];
 	
 	public Corso(String courseName,String professor) {
 		this.courseName=courseName;
@@ -33,17 +33,13 @@ public class Corso {
 	
 	public void addExam(int sc,int grade, int cc) {
 		Esami tempE=new Esami(sc,grade,cc);
-		if(exams==null) {
-			exams=new Esami[1];
-			exams[0]=tempE;
-		}else {
 			exams=Arrays.copyOf(exams,exams.length+1);
 			exams[exams.length-1]=tempE;
-		}
 	}
+	
 	public double calcAvg(){
 		double sumAvg=0;
-		if(!(exams==null)) {
+		if(exams.length!=0) {
 			for(int i=0;i<exams.length;i++) {
 				sumAvg+=exams[i].getGrades();
 			}

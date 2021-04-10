@@ -111,7 +111,7 @@ public class University {
 	 * @return information about the course
 	 */
 	public String course(int code){
-		return code+","+course[code].getCourse();
+		return code+","+course[code-COURSE_OFFSET].getCourse();
 	}
 	
 	/**
