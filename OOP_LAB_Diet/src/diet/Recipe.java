@@ -1,4 +1,5 @@
 package diet;
+import java.util.*;
 
 /**
  * Represents a recipe of the diet.
@@ -9,9 +10,25 @@ package diet;
  * 
  *
  */
-public class Recipe implements NutritionalElement {
-    
-
+public class Recipe extends Food implements NutritionalElement{
+	private String name;
+	private double calories;
+	private double proteins;
+	private double carbs;
+    private double fat;
+    private double qta;
+    private List <String>ingr=new LinkedList<>();
+    private Map<String,NutritionalElement> matforRecipe=new TreeMap<>();
+    private double []qties=new double[0];
+    public Recipe(String name,Map<String,NutritionalElement> matforRecipe) {
+    	this.name=name;
+    	this.calories=0.0;
+    	this.proteins=0.0;
+    	this.carbs=0.0;
+    	this.fat=0.0;
+    	this.qta=0.0;
+    	this.matforRecipe=matforRecipe;
+    }
 	/**
 	 * Adds a given quantity of an ingredient to the recipe.
 	 * The ingredient is a raw material.
@@ -21,32 +38,41 @@ public class Recipe implements NutritionalElement {
 	 * @return the same Recipe object, it allows method chaining.
 	 */
 	public Recipe addIngredient(String material, double quantity) {
-		return null;
+		NutritionalElement M=matforRecipe.get(material);
+		this.calories+=M.getCalories()*quantity/100;
+		this.proteins+=M.getProteins()*quantity/100;
+		this.carbs+=M.getCarbs()*quantity/100;
+		this.fat+=M.getFat()*quantity/100;
+		this.ingr.add(material);
+		this.qta+=quantity;
+		this.qties=Arrays.copyOf(this.qties, this.qties.length+1);
+		this.qties[this.qties.length-1]=quantity;
+		return this;
 	}
 
 	@Override
 	public String getName() {
-		return null;
+		return this.name;
 	}
 
 	@Override
 	public double getCalories() {
-		return 0.0;
+		return this.calories*100/this.qta;
 	}
 
 	@Override
 	public double getProteins() {
-		return 0.0;
+		return this.proteins*100/this.qta;
 	}
 
 	@Override
 	public double getCarbs() {
-		return 0.0;
+		return this.carbs*100/this.qta;
 	}
 
 	@Override
 	public double getFat() {
-		return 0.0;
+		return this.fat*100/this.qta;
 	}
 
 	/**
@@ -78,6 +104,11 @@ public class Recipe implements NutritionalElement {
 	 */
 	@Override
 	public String toString() {
-		return null;
+		String s="";
+		int i=0;
+		for(String t:ingr) {
+			s+=t+" : "+qties[i++]+"\n";
+		}
+		return s;
 	}
 }

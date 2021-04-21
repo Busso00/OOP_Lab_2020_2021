@@ -1,13 +1,34 @@
 package diet;
 
+import java.util.*;
+
 /**
  * Represents a complete menu.
  * 
  * It can be made up of both packaged products and servings of given recipes.
  *
  */
-public class Menu implements NutritionalElement {
-	
+public class Menu extends Food implements NutritionalElement {
+	private String name;
+	private double calories;
+	private double proteins;
+	private double carbs;
+    private double fat;
+    //private double qta;
+    private List <String>piatti=new LinkedList<>();
+    protected Map<String,NutritionalElement> recsMenu=new TreeMap<>();
+	protected Map<String,NutritionalElement> prodMenu=new TreeMap<>();
+    //private double []qties=new double[0];
+    public Menu(String name, Map<String,NutritionalElement> prodMenu, Map<String,NutritionalElement> recsMenu) {
+    	this.name=name;
+    	this.calories=0.0;
+    	this.proteins=0.0;
+    	this.carbs=0.0;
+    	this.fat=0.0;
+    	this.prodMenu=prodMenu;
+    	this.recsMenu=recsMenu;
+    	//this.qta=0.0;
+    }
 	/**
 	 * Adds a given serving size of a recipe.
 	 * 
@@ -18,8 +39,18 @@ public class Menu implements NutritionalElement {
 	 * @param quantity the amount in grams of the recipe to be used
 	 * @return the same Menu to allow method chaining
 	 */
+	
 	public Menu addRecipe(String recipe, double quantity) {
-		return null;
+		NutritionalElement R=recsMenu.get(recipe);
+		//this.qta+=quantity;
+		this.calories+=R.getCalories()*quantity/100;
+		this.proteins+=R.getProteins()*quantity/100;
+		this.carbs+=R.getCarbs()*quantity/100;
+		this.fat+=R.getFat()*quantity/100;
+		this.piatti.add(R.getName());
+		//this.qties=Arrays.copyOf(this.qties, this.qties.length+1);
+		//this.qties[this.qties.length-1]=quantity;
+		return this;
 	}
 
 	/**
@@ -31,7 +62,14 @@ public class Menu implements NutritionalElement {
 	 * @return the same Menu to allow method chaining
 	 */
 	public Menu addProduct(String product) {
-		return null;
+		NutritionalElement R=prodMenu.get(product);
+		//this.qta+=R.
+		this.calories+=R.getCalories();
+		this.proteins+=R.getProteins();
+		this.carbs+=R.getCarbs();
+		this.fat+=R.getFat();
+		this.piatti.add(R.getName());
+		return this;
 	}
 
 	/**
@@ -39,7 +77,7 @@ public class Menu implements NutritionalElement {
 	 */
 	@Override
 	public String getName() {
-		return null;
+		return this.name;
 	}
 
 	/**
@@ -47,7 +85,7 @@ public class Menu implements NutritionalElement {
 	 */
 	@Override
 	public double getCalories() {
-		return 0.0;
+		return this.calories;
 	}
 
 	/**
@@ -55,7 +93,7 @@ public class Menu implements NutritionalElement {
 	 */
 	@Override
 	public double getProteins() {
-		return 0.0;
+		return this.proteins;
 	}
 
 	/**
@@ -63,7 +101,7 @@ public class Menu implements NutritionalElement {
 	 */
 	@Override
 	public double getCarbs() {
-		return 0.0;
+		return this.carbs;
 	}
 
 	/**
@@ -71,7 +109,7 @@ public class Menu implements NutritionalElement {
 	 */
 	@Override
 	public double getFat() {
-		return 0.0;
+		return this.fat;
 	}
 
 	/**

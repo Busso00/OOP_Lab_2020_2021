@@ -41,14 +41,11 @@ public class ExampleTest {
         Recipe r = food.createRecipe("Pasta al Pomodoro");
         
         assertNotNull("Missing recipe",r);
-        r.addIngredient("Pasta", 70).
-          addIngredient("Passata di Pomodoro", 30).
-          addIngredient("Olive Oil", 5);
+        r.addIngredient("Pasta", 70).addIngredient("Passata di Pomodoro", 30).addIngredient("Olive Oil", 5);
         
         Menu menu = food.createMenu("M1");
         assertNotNull("Missing recipe",menu);
-        menu.addRecipe("Pasta al Pomodoro", 50).
-        	 addProduct("Crackers");
+        menu.addRecipe("Pasta al Pomodoro", 50).addProduct("Crackers");
         
         assertFalse(menu.per100g());
         assertEquals(254.2,menu.getCalories(),0.1);

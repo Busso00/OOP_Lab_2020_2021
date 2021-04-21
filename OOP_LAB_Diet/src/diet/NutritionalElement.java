@@ -1,5 +1,8 @@
 package diet;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 /**
  * Interface representing a generic nutritional element, that is a component of the diet.
  * A nutritional element can be a raw material, a packaged product, a recipe, or a menu.
@@ -15,7 +18,7 @@ package diet;
  * </ul>
  */
 public interface NutritionalElement {
-
+	
 	/**
 	 * Retrieves the name of the nutritional element.
 	 * Typically the name is unique within a specific category (e.g. raw materials)
