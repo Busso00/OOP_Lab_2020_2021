@@ -170,4 +170,9 @@ public class Food{
 		return M;
 	}
 	
+	public Menu getMenu(String name) {
+		return (Menu)menu.get(name);
+	}
+	
+	
 }

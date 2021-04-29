@@ -4,14 +4,28 @@ package diet;
  * Represent a take-away system user
  *  
  */
-public class User {
-		
+public class User implements Comparable<User>{
+	String fn;
+	String ln;
+	String email;
+	String phone;
+	public User(String fn,String ln) {
+		this.fn=fn;
+		this.ln=ln;
+	}
+	
+	public User(String fn,String ln,String email,String phone) {
+		this.fn=fn;
+		this.ln=ln;
+		this.email=email;
+		this.phone=phone;
+	}
 	/**
 	 * get user's last name
 	 * @return last name
 	 */
 	public String getLastName() {
-		return null;
+		return this.ln;
 	}
 	
 	/**
@@ -19,7 +33,7 @@ public class User {
 	 * @return first name
 	 */
 	public String getFirstName() {
-		return null;
+		return this.fn;
 	}
 	
 	/**
@@ -27,7 +41,7 @@ public class User {
 	 * @return email
 	 */
 	public String getEmail() {
-		return null;
+		return this.email;
 	}
 	
 	/**
@@ -35,7 +49,7 @@ public class User {
 	 * @return  phone number
 	 */
 	public String getPhone() {
-		return null;
+		return this.phone;
 	}
 	
 	/**
@@ -43,13 +57,23 @@ public class User {
 	 * @param email new email
 	 */
 	public void SetEmail(String email) {
+		this.email=email;
 	}
-	
+	@Override
+	public String toString() {
+		return this.fn+" "+this.ln;
+	}
+	@Override
+	public int compareTo(User b) {
+		return this.toString().compareTo(b.toString());
+	}
 	/**
 	 * change user's phone number
 	 * @param phone new phone number
 	 */
 	public void setPhone(String phone) {
+		this.phone=phone;
 	}
+	
 	
 }

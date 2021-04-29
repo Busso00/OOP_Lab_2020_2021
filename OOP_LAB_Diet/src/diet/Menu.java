@@ -111,7 +111,6 @@ public class Menu extends Food implements NutritionalElement {
 	public double getFat() {
 		return this.fat;
 	}
-
 	/**
 	 * Indicates whether the nutritional values returned by the other methods
 	 * refer to a conventional 100g quantity of nutritional element,
@@ -127,4 +126,5 @@ public class Menu extends Food implements NutritionalElement {
 		// nutritional values are provided for the whole menu.
 		return false;
 	}
+	
 }
