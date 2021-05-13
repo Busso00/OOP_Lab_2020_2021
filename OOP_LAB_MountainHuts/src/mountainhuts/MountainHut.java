@@ -9,13 +9,30 @@ import java.util.Optional;
  *
  */
 public class MountainHut {
-
+	private String name;
+	private Optional<Integer> alt;
+	private String cat;
+	private Integer bed;
+	private Municipality city;
+	public MountainHut(String name,String cat,Integer bed,Municipality city,Integer alt) {
+		this.name=name;
+		this.cat=cat;
+		this.bed=bed;
+		this.city=city;
+		this.alt=Optional.of(alt);
+	}
+	public MountainHut(String name,String cat,Integer bed,Municipality city) {
+		this.name=name;
+		this.cat=cat;
+		this.bed=bed;
+		this.city=city;
+	}
 	/**
 	 * Unique name of the mountain hut
 	 * @return name
 	 */
 	public String getName() {
-		return null;
+		return this.name;
 	}
 
 	/**
@@ -25,7 +42,7 @@ public class MountainHut {
 	 * @return optional containing the altitude
 	 */
 	public Optional<Integer> getAltitude() {
-		return null;
+		return this.alt;
 	}
 
 	/**
@@ -34,7 +51,7 @@ public class MountainHut {
 	 * @return the category
 	 */
 	public String getCategory() {
-		return null;
+		return this.cat;
 	}
 
 	/**
@@ -42,7 +59,7 @@ public class MountainHut {
 	 * @return number of beds
 	 */
 	public Integer getBedsNumber() {
-		return null;
+		return this.bed;
 	}
 
 	/**
@@ -51,7 +68,7 @@ public class MountainHut {
 	 * @return municipality
 	 */
 	public Municipality getMunicipality() {
-		return null;
+		return this.city;
 	}
 
 }
