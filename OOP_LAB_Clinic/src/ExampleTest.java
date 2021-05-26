@@ -37,7 +37,7 @@ public class ExampleTest {
 		assertNotNull("Missing doctor",kate);
 		assertTrue("Missing doctor's id",kate.contains("86"));
 		assertTrue("Missing doctor's specialization",kate.contains("Physician"));
-
+		
 		clinic.assignPatientToDoctor("SSNMDS", 86);
 		clinic.assignPatientToDoctor("ALCGRN", 14);
 		clinic.assignPatientToDoctor("RBTSMT", 14);

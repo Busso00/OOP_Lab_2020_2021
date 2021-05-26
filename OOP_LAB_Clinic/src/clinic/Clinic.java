@@ -2,14 +2,84 @@ package clinic;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+
 
 /**
  * Represents a clinic with patients and doctors.
  * 
  */
 public class Clinic {
-
+	
+	
+	public class Patient {
+		private String nome;
+		private String cognome;
+		private String ssn;
+		private int docID;
+		public Patient(String first, String last, String ssn) {
+			this.nome=first;
+			this.cognome=last;
+			this.ssn=ssn;
+		}
+		public void setDoctor(int docID) {
+			this.docID=docID;
+		}
+		public int getDoctor() {
+			return docID;
+		}
+		@Override
+		public String toString() {
+			return cognome+" "+nome+" ("+ssn+")";
+		}
+		public String strRep() {
+			return cognome+" "+nome+" ("+ssn+")";
+		}
+	}
+	
+	public class Doctor extends Patient{
+		private int ID;
+		private String specialization;
+		private List<String> assP=new ArrayList<>();
+		public Doctor(String first, String last, String ssn, int docID, String specialization){
+			super(first,last,ssn);
+			this.ID=docID;
+			this.specialization=specialization;
+		}
+		public void setPatient(String ssn) {
+			assP.add(ssn);
+		}
+		public Collection<String> getPatients(){
+			return this.assP;
+		}
+		public int getID() {
+			return this.ID;
+		}
+		public String getName() {
+			return ((Patient)this).nome;
+		}
+		public String getSurname() {
+			return ((Patient)this).cognome;
+		}
+		public int nPat() {
+			return assP.size();
+		}
+		public String getSpec() {
+			return specialization;
+		}
+		@Override
+		public String toString() {
+			return ((Patient)this).strRep()+" ["+ID+"]: "+specialization;
+		}
+	}
+	private Map <String,Patient> rPatients= new TreeMap<>();
+	private Map <Integer,Doctor> rDoctors= new TreeMap<>();
 	/**
 	 * Add a new clinic patient.
 	 * 
@@ -18,8 +88,7 @@ public class Clinic {
 	 * @param ssn SSN number of the patient
 	 */
 	public void addPatient(String first, String last, String ssn) {
-		// TODO Complete method
-
+		rPatients.put(ssn, new Patient(first,last,ssn));
 	}
 
 
@@ -31,8 +100,9 @@ public class Clinic {
 	 * @throws NoSuchPatient in case of no patient with matching SSN
 	 */
 	public String getPatient(String ssn) throws NoSuchPatient {
-		// TODO Complete method
-		return null;
+		if(!rPatients.containsKey(ssn))
+			throw new NoSuchPatient();
+		return rPatients.get(ssn).toString();
 	}
 
 	/**
@@ -45,8 +115,7 @@ public class Clinic {
 	 * @param specialization doctor's specialization
 	 */
 	public void addDoctor(String first, String last, String ssn, int docID, String specialization) {
-		// TODO Complete method
-
+		rDoctors.put(docID, new Doctor(first, last, ssn, docID, specialization));
 	}
 
 	/**
@@ -57,8 +126,9 @@ public class Clinic {
 	 * @throws NoSuchDoctor in case no doctor exists with a matching ID
 	 */
 	public String getDoctor(int docID) throws NoSuchDoctor {
-		// TODO Complete method
-		return null;
+		if(!rDoctors.containsKey(docID))
+			throw new NoSuchDoctor();
+		return rDoctors.get(docID).toString();
 	}
 	
 	/**
@@ -70,8 +140,12 @@ public class Clinic {
 	 * @throws NoSuchDoctor in case no doctor exists with a matching ID
 	 */
 	public void assignPatientToDoctor(String ssn, int docID) throws NoSuchPatient, NoSuchDoctor {
-		// TODO Complete method
-
+		if(!rDoctors.containsKey(docID))
+			throw new NoSuchDoctor();
+		if(!rPatients.containsKey(ssn))
+			throw new NoSuchPatient();
+		rDoctors.get(docID).setPatient(ssn);
+		rPatients.get(ssn).setDoctor(docID);
 	}
 	
 	/**
@@ -83,8 +157,11 @@ public class Clinic {
 	 * @throws NoSuchDoctor in case no doctor has been assigned to the patient
 	 */
 	public int getAssignedDoctor(String ssn) throws NoSuchPatient, NoSuchDoctor {
-		// TODO Complete method
-		return -1;
+		if(!rPatients.containsKey(ssn))
+			throw new NoSuchPatient();
+		if(!rDoctors.containsKey(rPatients.get(ssn).getDoctor()))
+			throw new NoSuchDoctor();
+		return rPatients.get(ssn).getDoctor();
 	}
 	
 	/**
@@ -95,8 +172,9 @@ public class Clinic {
 	 * @throws NoSuchDoctor in case the {@code id} does not match any doctor 
 	 */
 	public Collection<String> getAssignedPatients(int id) throws NoSuchDoctor {
-		// TODO Complete method
-		return null;
+		if(!rDoctors.containsKey(id))
+			throw new NoSuchDoctor();
+		return rDoctors.get(id).getPatients();
 	}
 
 
@@ -119,12 +197,66 @@ public class Clinic {
 	 * @param readed linked to the file to be read
 	 * @throws IOException in case of IO error
 	 */
-	public int loadData(Reader reader) throws IOException {
-		// TODO Complete method
-		return -1;		
+	public int loadData(Reader reader) throws IOException{
+		String line=null;
+		String [] fields=new String [0];
+		String regexp = "\\s*;\\s*";
+		int nval=0;
+		try {
+			line=Clinic.readLine(reader);
+		}catch(IOException e) {
+			System.err.println("Impossibile leggere il file!!!");
+		}finally {
+			System.out.println("Metodo terminato!");
+		}
+		
+		try {
+		while(line!=null) {
+			try {
+				fields=line.split(regexp);
+			}catch (PatternSyntaxException e) {
+				continue;
+			}
+			if(fields[0].equals("P")) 
+			{
+				if(fields.length!=4)
+					continue;
+				this.addPatient(fields[1], fields[2], fields[3]);
+				nval++;
+			}
+			else if(fields[0].equals("M")){
+				if(fields.length!=6)
+					continue;
+				try {
+					this.addDoctor(fields[2], fields[3], fields[4] ,Integer.parseInt(fields[1]), fields[5]);	
+					nval++;
+				}catch(NumberFormatException e) {
+					
+				}
+			}
+			line=Clinic.readLine(reader);
+		}
+		}catch(IOException e) {
+			System.err.println("Impossibile leggere il file!!!");
+		}finally {
+			System.out.println("Metodo terminato!");
+		}
+		return nval;	
 	}
-
-
+	
+	static String readLine(Reader r) throws IOException {
+		String riga = "";
+		
+		int ch;
+		ch=r.read();
+		if(ch==-1) return null; // EOF
+		
+		while( ch != -1 && ch!='\n') {
+			riga+=(char)ch;
+			ch=r.read();
+		}
+		return riga;
+	}
 
 	/**
 	 * Loads data about doctors and patients from the given stream.
@@ -148,8 +280,56 @@ public class Clinic {
 	 * @throws IOException in case of IO error
 	 */
 	public int loadData(Reader reader, ErrorListener listener) throws IOException {
-		// TODO Complete method
-		return -1;
+		String line=null;
+		String [] fields=new String [0];
+		String regexp = "\\s*;\\s*";
+		int nval=0;
+		try {
+			line=Clinic.readLine(reader);
+		}catch(IOException e) {
+			System.err.println("Impossibile leggere il file!!!");
+		}finally {
+			System.out.println("Metodo terminato!");
+		}
+		int i=0;
+		try {
+		while(line!=null) {
+			i++;
+			try {
+				fields=line.split(regexp);
+			}catch (PatternSyntaxException e) {
+				listener.offending(""+i);
+				continue;
+			}
+			if(fields[0].equals("P")) 
+			{
+				if(fields.length!=4) {
+					listener.offending(""+i);
+					continue;
+				}
+				this.addPatient(fields[1], fields[2], fields[3]);
+				nval++;
+			}
+			else if(fields[0].equals("M")){
+				if(fields.length!=6) {
+					listener.offending(""+i);
+					continue;
+				}
+				try {
+					this.addDoctor(fields[2], fields[3], fields[4] ,Integer.parseInt(fields[1]), fields[5]);	
+					nval++;
+				}catch(NumberFormatException e) {
+					listener.offending(""+i);
+				}
+			}
+			line=Clinic.readLine(reader);
+		}
+		}catch(IOException e) {
+			System.err.println("Impossibile leggere il file!!!");
+		}finally {
+			System.out.println("Metodo terminato!");
+		}
+		return nval;	
 	}
 
 		
@@ -160,8 +340,15 @@ public class Clinic {
 	 * @return the collection of doctors' ids
 	 */
 	public Collection<Integer> idleDoctors(){
-		// TODO Complete method
-		return null;
+		return rDoctors.values().stream().filter((d)->{
+			if(d.getPatients().isEmpty())
+				return true;
+			return false;
+		}).sorted((d0,d1)->{
+			if(d0.getSurname().compareTo(d1.getSurname())!=0)
+				return d0.getSurname().compareTo(d1.getSurname());
+			return d0.getName().compareTo(d1.getName());
+		}).map(Clinic.Doctor::getID).collect(Collectors.toList());
 	}
 
 	/**
@@ -170,8 +357,11 @@ public class Clinic {
 	 * @return  the collection of doctors' ids
 	 */
 	public Collection<Integer> busyDoctors(){
-		// TODO Complete method
-		return null;
+		return rDoctors.values().stream().filter((d)->{
+			if(d.getPatients().size()>rDoctors.values().stream().collect(Collectors.averagingDouble(Doctor::nPat)))
+				return true;
+			return false;
+		}).map(Clinic.Doctor::getID).collect(Collectors.toList());
 	}
 
 	/**
@@ -185,8 +375,11 @@ public class Clinic {
 	 * @return the collection of strings with information about doctors and patients count
 	 */
 	public Collection<String> doctorsByNumPatients(){
-		// TODO Complete method
-		return null;
+		return rDoctors.values().stream().sorted((d0,d1)->{
+			return (int) Math.signum(d0.nPat()-d1.nPat());
+		}).map((d)->{
+			return String.format("%3d",d.nPat())+" : "+d.getID()+" "+d.getSurname()+" "+d.getName();
+		}).collect(Collectors.toList());
 	}
 	
 	/**
@@ -201,8 +394,13 @@ public class Clinic {
 	 * @return the collection of strings with speciality and patient count information.
 	 */
 	public Collection<String> countPatientsPerSpecialization(){
-		// TODO Complete method
-		return null;
+		return rDoctors.values().stream().collect(Collectors.groupingBy(
+				Doctor::getSpec,
+					Collectors.summingInt(Doctor::nPat)
+				)).entrySet().stream().map(a->{
+					return String.format("%3d", a.getValue())+" - "+ a.getKey();
+				}).collect(Collectors.toList());
+		
 	}
 	
 }
