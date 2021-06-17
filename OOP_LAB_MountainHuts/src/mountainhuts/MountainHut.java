@@ -9,20 +9,20 @@ import java.util.Optional;
  *
  */
 public class MountainHut {
-	private String name;
+	private String nome;
 	private Optional<Integer> alt;
 	private String cat;
 	private Integer bed;
 	private Municipality city;
 	public MountainHut(String name,String cat,Integer bed,Municipality city,Integer alt) {
-		this.name=name;
+		this.nome=name;
 		this.cat=cat;
 		this.bed=bed;
 		this.city=city;
 		this.alt=Optional.of(alt);
 	}
 	public MountainHut(String name,String cat,Integer bed,Municipality city) {
-		this.name=name;
+		this.nome=name;
 		this.cat=cat;
 		this.bed=bed;
 		this.city=city;
@@ -32,7 +32,7 @@ public class MountainHut {
 	 * @return name
 	 */
 	public String getName() {
-		return this.name;
+		return this.nome;
 	}
 
 	/**
