@@ -353,7 +353,7 @@ public class Vaccines {
      * @return
      */
     public int getDailyAvailable(String hub, int d) {
-        return -1;
+        return this.centri.get(hub).getCap()*this.ore.get(d);
     }
 
     /**
