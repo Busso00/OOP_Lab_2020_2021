@@ -6,10 +6,29 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class Vaccines {
-
+	private Map<String,Person> reg=new TreeMap<>();
+	public class Person {
+		private String cFisc;
+		private String nome;
+		private String cognome;
+		private int annoN;
+		public Person(String first, String lastName, String ssn, int year) {
+			this.nome=first;
+			this.cognome=lastName;
+			this.cFisc=ssn;
+			this.annoN=year;
+		}
+		public int getAge() {
+			return this.annoN;
+		}
+		public String getPerson() {
+			return this.cFisc+","+this.cognome+","+this.annoN;
+		}
+	}
     public final static int CURRENT_YEAR = java.time.LocalDate.now().getYear();
 
     // R1
@@ -25,7 +44,10 @@ public class Vaccines {
      * @return {@code false} if ssn is duplicate,
      */
     public boolean addPerson(String first, String lastName, String ssn, int year) {
-        return false;
+    	if(reg.containsKey(ssn))
+    		return false;
+    	reg.put(ssn, new Person(first,lastName,ssn,year));
+    	return true;
     }
 
     /**
@@ -34,7 +56,7 @@ public class Vaccines {
      * @return person count
      */
     public int countPeople() {
-        return -1;
+        return this.reg.size();
     }
 
     /**
@@ -46,7 +68,7 @@ public class Vaccines {
      * @return info about the person
      */
     public String getPerson(String ssn) {
-        return null;
+        return this.reg.get(ssn).getPerson();
     }
 
     /**
@@ -56,7 +78,7 @@ public class Vaccines {
      * @return age of person (in years)
      */
     public int getAge(String ssn) {
-        return -1;
+        return this.reg.get(ssn).getAge();
     }
 
     /**
@@ -71,6 +93,7 @@ public class Vaccines {
      * @param breaks the array of breaks
      */
     public void setAgeIntervals(int... breaks) {
+    	
     }
 
     /**
@@ -162,8 +185,18 @@ public class Vaccines {
     public long loadPeople(Reader people) throws IOException, VaccineException {
         // Hint:
         BufferedReader br = new BufferedReader(people);
+        String riga;
+        String[] temp;
+        int n=0;
+        if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
+        	throw new VaccineException();
+        while( ( riga=br.readLine() ) != null) {
+			temp=riga.split(",");
+			this.addPerson(temp[0], temp[1], temp[2],Integer.parseInt(temp[3]));
+			n++;
+		}
         br.close();
-        return -1;
+        return n;
     }
 
     // R4
