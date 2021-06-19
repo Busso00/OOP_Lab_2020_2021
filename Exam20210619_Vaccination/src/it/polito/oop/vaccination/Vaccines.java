@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class Vaccines {
 	private Map<String,Person> reg=new TreeMap<>();
+	private Map<Integer,Range> ran=new TreeMap<>();
 	public class Person {
 		private String cFisc;
 		private String nome;
@@ -27,6 +29,28 @@ public class Vaccines {
 		}
 		public String getPerson() {
 			return this.cFisc+","+this.cognome+","+this.annoN;
+		}
+		public String getCodF() {
+			return this.cFisc;
+		}
+	}
+	
+	public class Range{
+		private int min;
+		private int max;
+		public Range(int min,int max) {
+			this.min=min;
+			this.max=max;
+		}
+		public String getInt() {
+			if(this.max==Integer.MAX_VALUE)
+				return "["+this.min+","+"+)";
+			return "["+this.min+","+this.max+")";
+		}
+		public boolean match(int a) {
+			if((a>min)&&(a<max))
+				return true;
+			return false;
 		}
 	}
     public final static int CURRENT_YEAR = java.time.LocalDate.now().getYear();
@@ -93,7 +117,12 @@ public class Vaccines {
      * @param breaks the array of breaks
      */
     public void setAgeIntervals(int... breaks) {
-    	
+    	int prev=0;
+    	for(int i:breaks) {
+    		this.ran.put(prev, new Range(prev,i));
+    		prev=i;
+    	}
+    	this.ran.put(prev,new Range(prev, Integer.MAX_VALUE));
     }
 
     /**
@@ -106,7 +135,11 @@ public class Vaccines {
      * @return labels of the age intervals
      */
     public Collection<String> getAgeIntervals() {
-        return null;
+    	List <String> l=new ArrayList<>();
+        for(Range r:this.ran.values()) {
+        	l.add(r.getInt());
+        }
+        return l;
     }
 
     /**
@@ -119,7 +152,18 @@ public class Vaccines {
      * @return collection of SSN of person in the age interval
      */
     public Collection<String> getInInterval(String range) {
-        return null;
+    	String []temp=range.split(",");
+    	String s1=(String) temp[0].subSequence(1, temp[0].length());
+    	String s2=(String) temp[1].subSequence(0, temp[1].length()-1);
+    	Range r=new Range(Integer.parseInt(s1),Integer.parseInt(s2));
+        return this.reg.values().stream().filter((a)->{
+        	if(r.match(java.time.LocalDate.now().getYear()-a.annoN))
+        		return true;
+        	return false;
+        }).map((m)->{
+        	return m.getCodF();
+        }
+        ).collect(Collectors.toList());
     }
 
     // R2
@@ -130,6 +174,7 @@ public class Vaccines {
      * @throws VaccineException in case of duplicate name
      */
     public void defineHub(String name) throws VaccineException {
+    	
     }
 
     /**
@@ -209,6 +254,7 @@ public class Vaccines {
      * @throws VaccineException if there are not exactly 7 elements or if the sum of all hours is less than 0 ore greater than 24*7.
      */
     public void setHours(int... hours) throws VaccineException {
+    	
     }
 
     /**
