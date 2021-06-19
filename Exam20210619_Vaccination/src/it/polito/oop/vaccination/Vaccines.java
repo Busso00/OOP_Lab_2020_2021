@@ -330,7 +330,18 @@ public class Vaccines {
      * @return the list hours for each day of the week
      */
     public List<List<String>> getHours() {
-        return null;
+    	List <List<String>> orari=new ArrayList<>();
+    	List <String> ora=new ArrayList<>(); 
+        for(int h:this.ore) {
+        	int oFine=h+9;
+        	ora=new ArrayList<>(); 
+        	String t=String.format("%02d", h)+":00";
+        	ora.add(t);
+        	String t1=String.format("%02d", oFine)+":00";
+        	ora.add(t1);
+        	orari.add(ora);
+        }
+        return orari;
     }
 
     /**
