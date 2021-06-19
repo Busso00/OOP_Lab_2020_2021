@@ -3,9 +3,6 @@ package it.polito.oop.vaccination;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -13,6 +10,8 @@ import java.util.stream.Collectors;
 public class Vaccines {
 	private Map<String,Person> reg=new TreeMap<>();
 	private Map<Integer,Range> ran=new TreeMap<>();
+	private Map<String,Center> centri=new TreeMap<>();
+	private List<Integer> ore=new ArrayList<>();
 	public class Person {
 		private String cFisc;
 		private String nome;
@@ -48,11 +47,39 @@ public class Vaccines {
 			return "["+this.min+","+this.max+")";
 		}
 		public boolean match(int a) {
-			if((a>min)&&(a<max))
+			if((a>=min)&&(a<max))
 				return true;
 			return false;
 		}
 	}
+	
+	public class Center{
+		private String nome;
+		private int nDoc;
+		private int nNur;
+		private int other;
+		public Center(String nome) {
+			this.nome=nome;
+		}
+		public void setnDoc(int n) {
+			this.nDoc=n;
+		}
+		public void setnNur(int n) {
+			this.nNur=n;
+		}
+		public void setOther(int n) {
+			this.other=n;
+		}
+		public int getCap() {
+			if((this.nDoc*10<this.nNur*12)&&(this.nDoc*10<this.other*20))
+				return this.nDoc;
+			if((this.nNur*12<this.nDoc*10)&&(this.nNur*12<this.other*20))
+				return this.nNur;
+			return this.other*20;
+		}
+		
+	}
+	
     public final static int CURRENT_YEAR = java.time.LocalDate.now().getYear();
 
     // R1
@@ -153,8 +180,11 @@ public class Vaccines {
      */
     public Collection<String> getInInterval(String range) {
     	String []temp=range.split(",");
+    	if(temp[1].equals("+)"))
+    		temp[1]=Integer.MAX_VALUE+")";
     	String s1=(String) temp[0].subSequence(1, temp[0].length());
     	String s2=(String) temp[1].subSequence(0, temp[1].length()-1);
+ 
     	Range r=new Range(Integer.parseInt(s1),Integer.parseInt(s2));
         return this.reg.values().stream().filter((a)->{
         	if(r.match(java.time.LocalDate.now().getYear()-a.annoN))
@@ -174,7 +204,10 @@ public class Vaccines {
      * @throws VaccineException in case of duplicate name
      */
     public void defineHub(String name) throws VaccineException {
-    	
+    	if(this.centri.containsKey(name)) {
+    		throw new VaccineException();
+    	}
+    	this.centri.put(name,new Center(name));
     }
 
     /**
@@ -183,7 +216,7 @@ public class Vaccines {
      * @return hub names
      */
     public Collection<String> getHubs() {
-        return null;
+        return this.centri.keySet();
     }
 
     /**
@@ -197,6 +230,18 @@ public class Vaccines {
      * @throws VaccineException in case of undefined hub, or any number of personnel not greater than 0.
      */
     public void setStaff(String name, int doctors, int nNurses, int o) throws VaccineException {
+    	if(doctors<=0)
+    		throw new VaccineException();
+    	if(nNurses<=0)
+    		throw new VaccineException();
+    	if(o<=0)
+    		throw new VaccineException();
+    	if(!this.centri.containsKey(name))
+    		throw new VaccineException();
+    	Center c=this.centri.get(name);
+    		c.setnDoc(doctors);
+    		c.setnNur(nNurses);
+    		c.setOther(o);
     }
 
     /**
@@ -210,7 +255,12 @@ public class Vaccines {
      * @throws VaccineException in case of undefined or hub without staff
      */
     public int estimateHourlyCapacity(String hub) throws VaccineException {
-        return -1;
+        if(!this.centri.containsKey(hub))
+        	throw new VaccineException();
+        if(this.centri.get(hub).getCap()!=0)
+        	return this.centri.get(hub).getCap();
+        else
+        	throw new VaccineException();
     }
 
     // R3
@@ -254,7 +304,16 @@ public class Vaccines {
      * @throws VaccineException if there are not exactly 7 elements or if the sum of all hours is less than 0 ore greater than 24*7.
      */
     public void setHours(int... hours) throws VaccineException {
-    	
+    	if(hours.length!=7)
+    		throw new VaccineException();
+    	for(int i:hours) {
+    		if(i>12)
+    			throw new VaccineException();
+    	}
+    	this.ore=new ArrayList<>();
+    	for(int i:hours) {
+    		this.ore.add(i);
+    	}
     }
 
     /**
