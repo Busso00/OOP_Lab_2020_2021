@@ -55,9 +55,9 @@ public class Vaccines {
 	
 	public class Center{
 		private String nome;
-		private int nDoc;
-		private int nNur;
-		private int other;
+		private int nDoc=0;
+		private int nNur=0;
+		private int other=0;
 		public Center(String nome) {
 			this.nome=nome;
 		}
@@ -71,9 +71,9 @@ public class Vaccines {
 			this.other=n;
 		}
 		public int getCap() {
-			if((this.nDoc*10<this.nNur*12)&&(this.nDoc*10<this.other*20))
+			if((this.nDoc*10<=this.nNur*12)&&(this.nDoc*10<=this.other*20))
 				return this.nDoc;
-			if((this.nNur*12<this.nDoc*10)&&(this.nNur*12<this.other*20))
+			if((this.nNur*12<=this.nDoc*10)&&(this.nNur*12<=this.other*20))
 				return this.nNur;
 			return this.other*20;
 		}
@@ -239,9 +239,9 @@ public class Vaccines {
     	if(!this.centri.containsKey(name))
     		throw new VaccineException();
     	Center c=this.centri.get(name);
-    		c.setnDoc(doctors);
-    		c.setnNur(nNurses);
-    		c.setOther(o);
+    	c.setnDoc(doctors);
+    	c.setnNur(nNurses);
+   		c.setOther(o);
     }
 
     /**
