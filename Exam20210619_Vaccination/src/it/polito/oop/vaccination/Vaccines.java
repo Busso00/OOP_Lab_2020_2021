@@ -16,6 +16,7 @@ public class Vaccines {
 	private Map<String,Center> centri=new TreeMap<>();
 	private Set<String> prenot=new HashSet<>();
 	private List<Integer> ore=new ArrayList<>();
+	private BiConsumer<Integer, String> listener;
 	public class Person {
 		private String cFisc;
 		private String nome;
@@ -306,6 +307,7 @@ public class Vaccines {
         String riga="";
         String[] temp;
         int n=0;
+        if(this.listener==null) {//aggiunta per R7
         if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
         	throw new VaccineException();
         while(( riga=br.readLine())!= null) {
@@ -313,6 +315,25 @@ public class Vaccines {
 			if(this.addPerson(temp[2], temp[1],  temp[0],Integer.parseInt(temp[3]))) //qui avevo invertito temp[0] e temp[2]
 				n++;
 		}
+    	}else {
+    		int i=1;
+    		if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
+            	throw new VaccineException();
+            while(( riga=br.readLine())!= null) {
+            	i++;
+    			temp=riga.split(",");
+    			if(temp.length<4) {
+    				this.listener.accept(i, riga);
+    				continue;
+    			}
+    			if(this.reg.containsKey(temp[0])) {
+    				this.listener.accept(i, riga);
+    				continue;
+    			}
+    			if(this.addPerson(temp[2], temp[1],  temp[0],Integer.parseInt(temp[3]))) //qui avevo invertito temp[0] e temp[2]
+    				n++;
+    		}
+    	}
         br.close();
         return n;
     }
@@ -610,5 +631,6 @@ public class Vaccines {
      * @param listener the listener for load errors
      */
     public void setLoadListener(BiConsumer<Integer, String> listener) {//non implementato durante l'esame
+    	this.listener=listener;
     }
 }
