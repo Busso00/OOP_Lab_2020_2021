@@ -1,5 +1,8 @@
 package it.polito.oop.vaccination;
 
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -11,12 +14,15 @@ public class Vaccines {
 	private Map<String,Person> reg=new TreeMap<>();
 	private Map<Integer,Range> ran=new TreeMap<>();
 	private Map<String,Center> centri=new TreeMap<>();
+	private Set<String> prenot=new HashSet<>();
 	private List<Integer> ore=new ArrayList<>();
 	public class Person {
 		private String cFisc;
 		private String nome;
 		private String cognome;
 		private int annoN;
+		private String cent;
+		private int giorno;
 		public Person(String first, String lastName, String ssn, int year) {
 			this.nome=first;
 			this.cognome=lastName;
@@ -24,13 +30,23 @@ public class Vaccines {
 			this.annoN=year;
 		}
 		public int getAge() {
-			return this.annoN;
+			return java.time.LocalDate.now().getYear()-this.annoN;
 		}
 		public String getPerson() {
 			return this.cFisc+","+this.cognome+","+this.annoN;
 		}
 		public String getCodF() {
 			return this.cFisc;
+		}
+		public void setVacc(String cent,int d) {
+			this.cent=cent;
+			this.giorno=d;
+		}
+		public String getCent() {
+			return this.cent;
+		}
+		public int getG() {
+			return this.giorno;
 		}
 	}
 	
@@ -51,13 +67,19 @@ public class Vaccines {
 				return true;
 			return false;
 		}
+		public int getMin() {
+			return this.min;
+		}
+		public int getMax() {
+			return this.max;
+		}
 	}
 	
 	public class Center{
 		private String nome;
-		private int nDoc=0;
-		private int nNur=0;
-		private int other=0;
+		private int nDoc;
+		private int nNur;
+		private int other;
 		public Center(String nome) {
 			this.nome=nome;
 		}
@@ -71,13 +93,15 @@ public class Vaccines {
 			this.other=n;
 		}
 		public int getCap() {
-			if((this.nDoc*10<=this.nNur*12)&&(this.nDoc*10<=this.other*20))
-				return this.nDoc;
-			if((this.nNur*12<=this.nDoc*10)&&(this.nNur*12<=this.other*20))
-				return this.nNur;
+			if(((this.nDoc*10)<=(this.nNur*12))&&((this.nDoc*10)<=(this.other*20)))
+				return this.nDoc*10;//mi ero dimenticato di moltiplicare per 10
+			if(((this.nNur*12)<=(this.nDoc*10))&&((this.nNur*12)<=(this.other*20)))
+				return this.nNur*12;//mi ero dimenticato di moltiplicare per 12
 			return this.other*20;
 		}
-		
+		public String getNome() {
+			return this.nome;
+		}
 	}
 	
     public final static int CURRENT_YEAR = java.time.LocalDate.now().getYear();
@@ -187,7 +211,7 @@ public class Vaccines {
  
     	Range r=new Range(Integer.parseInt(s1),Integer.parseInt(s2));
         return this.reg.values().stream().filter((a)->{
-        	if(r.match(java.time.LocalDate.now().getYear()-a.annoN))
+        	if(r.match(a.getAge()))//modifica, non avevo letto bene i requisiti
         		return true;
         	return false;
         }).map((m)->{
@@ -259,8 +283,7 @@ public class Vaccines {
         	throw new VaccineException();
         if(this.centri.get(hub).getCap()!=0)
         	return this.centri.get(hub).getCap();
-        else
-        	throw new VaccineException();
+        throw new VaccineException();
     }
 
     // R3
@@ -280,15 +303,15 @@ public class Vaccines {
     public long loadPeople(Reader people) throws IOException, VaccineException {
         // Hint:
         BufferedReader br = new BufferedReader(people);
-        String riga;
+        String riga="";
         String[] temp;
         int n=0;
         if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
         	throw new VaccineException();
-        while( ( riga=br.readLine() ) != null) {
+        while(( riga=br.readLine())!= null) {
 			temp=riga.split(",");
-			this.addPerson(temp[0], temp[1], temp[2],Integer.parseInt(temp[3]));
-			n++;
+			if(this.addPerson(temp[2], temp[1],  temp[0],Integer.parseInt(temp[3]))) //qui avevo invertito temp[0] e temp[2]
+				n++;
 		}
         br.close();
         return n;
@@ -335,8 +358,17 @@ public class Vaccines {
         for(int h:this.ore) {
         	int oFine=h+9;
         	ora=new ArrayList<>(); 
-        	String t=String.format("%02d", h)+":00";
+        	int cont=9;//aggiunta
+        	String t=String.format("%02d", cont)+":00";//modifica
         	ora.add(t);
+        	//inizio aggiunta
+        	for(int i=1;i<(h*4-1);i++) {
+        		if(i%4==0)
+        			cont++;
+        		t=String.format("%02d", cont)+":"+String.format("%02d",i%4*15);
+        		ora.add(t);
+        	}
+        	//fine aggiunta
         	String t1=String.format("%02d", oFine)+":00";
         	ora.add(t1);
         	orari.add(ora);
@@ -368,7 +400,12 @@ public class Vaccines {
      * @return
      */
     public Map<String, List<Integer>> getAvailable() {
-        return null;
+        return this.centri.keySet().stream().collect(Collectors.toMap(e->e,cv->{
+        	List<Integer> l=new ArrayList<>();
+        	for(int i=0;i<7;i++)
+        		l.add(this.getDailyAvailable(cv,i));
+        	return l;}
+        ));
     }
 
     /**
@@ -387,15 +424,69 @@ public class Vaccines {
      * @param d day of week index (0 = Monday)
      * @return the list of daily allocations
      */
-    public List<String> allocate(String hub, int d) {
-        return null;
+    public List<String> allocate(String hub, int d) {//non implementato durante l'esame
+    	List <Range> l= new ArrayList<>();
+    	l.addAll(this.ran.values());
+    	List <String> ret=new ArrayList<>();
+    	l.sort((a,b)->{
+    		return b.getMin()-a.getMin();
+    	});
+    	List<String> p;
+    	int lim;
+		long a=0;
+    	int n=this.getDailyAvailable(hub, d);
+        for(Range r:l) {
+        	lim=(int) (n*4/10);
+        	p=new ArrayList<>();
+        	p.addAll(this.getInInterval(r.getInt()));
+        	p.stream().filter((e)->{
+       			return !this.prenot.contains(e);
+       		}).limit(lim).forEach(el->{
+       			this.reg.get(el).setVacc(hub, d);
+       		});
+    		ret.addAll(p.stream().filter((e)->{
+        		return !this.prenot.contains(e);
+       		}).limit(lim).collect(Collectors.toList()));
+    		a=p.stream().filter((e)->{
+        		return !this.prenot.contains(e);
+       		}).limit(lim).count();	
+    		this.prenot.addAll(p.stream().filter((e)->{
+        		return !this.prenot.contains(e);
+       		}).limit(lim).collect(Collectors.toList()));
+        	n-=a;
+        }
+        if(n>0) {
+        	for(Range r:l) {
+            	p=new ArrayList<>();
+            	p.addAll(this.getInInterval(r.getInt()));
+        		p.stream().filter((e)->{
+           			return !this.prenot.contains(e);
+           		}).limit(n).forEach(el->{
+           			this.reg.get(el).setVacc(hub, d);
+           		});
+        		ret.addAll(p.stream().filter((e)->{
+            		return !this.prenot.contains(e);
+           		}).limit(n).collect(Collectors.toList()));
+        		a=p.stream().filter((e)->{
+            		return !this.prenot.contains(e);
+           		}).limit(n).count();	
+        		this.prenot.addAll(p.stream().filter((e)->{
+            		return !this.prenot.contains(e);
+           		}).limit(n).collect(Collectors.toList()));
+            	n-=a;
+            	if(n<=0)
+            		break;
+            }
+        }
+    	return ret;
     }
 
     /**
      * Removes all people from allocation lists and
      * clears their allocation status
      */
-    public void clearAllocation() {
+    public void clearAllocation() {//non implementato durante l'esame
+    	this.prenot=new HashSet<>();
     }
 
     /**
@@ -416,8 +507,29 @@ public class Vaccines {
      *
      * @return the list of daily allocations
      */
-    public List<Map<String, List<String>>> weekAllocate() {
-        return null;
+    public List<Map<String, List<String>>> weekAllocate() {//non implementato durante l'esame
+    	List<Map<String, List<String>>> weeko= new ArrayList<>();
+    	List<List<Person>> listP= new ArrayList<>();
+    	
+    	for(int i=0;i<7;i++) {
+    		for(Center cent:this.centri.values())
+    			this.allocate(cent.getNome(),i);
+    	}
+
+    	for(int i=0;i<7;i++) {
+    		listP.add(new ArrayList<>());
+    		
+    		for(Person temp:this.reg.values())
+    			if(temp.getG()==i)
+    				listP.get(i).add(temp);
+    	    weeko.add(listP.get(i).stream().filter(p->{
+    			return this.prenot.contains(p.getCodF());
+    		}).collect(Collectors.groupingBy(e->e.getCent(),
+    		TreeMap::new,
+    		Collectors.mapping(en->en.getCodF(), Collectors.toList()))));
+    	    System.out.println(listP.get(i).size());
+    	}
+        return weeko;
     }
 
     // R5
@@ -428,8 +540,8 @@ public class Vaccines {
      *
      * @return proportion of allocated people
      */
-    public double propAllocated() {
-        return -1.0;
+    public double propAllocated() {//non implementato durante l'esame
+        return (double)this.prenot.size()/this.reg.size();
     }
 
     /**
@@ -442,8 +554,22 @@ public class Vaccines {
      *
      * @return proportion of allocated people by age interval
      */
-    public Map<String, Double> propAllocatedAge() {
-        return null;
+    public Map<String, Double> propAllocatedAge() {//non implementato durante l'esame
+    	Map<String, Double> propAll=new TreeMap<>();
+    	int i;
+    	double rapp;
+    	List<Range> all= this.ran.values().stream().collect(Collectors.toList());
+    	for(Range e:all) {
+    		i=0;
+    		for(String u:this.prenot.stream().collect(Collectors.toList())) {
+    			if(this.ran.get(e.getMin()).match(this.reg.get(u).getAge()))
+    				i++;
+    		}
+    		//rapp=(double)i/this.getInInterval(e.getInt()).stream().count(); //dalla specifica sembrava richiesto questo, ma così i test falliscono
+    		rapp=(double)i/this.countPeople();
+    	    propAll.put(e.getInt(),rapp);
+    	}
+    	return propAll;
     }
 
     /**
@@ -456,8 +582,21 @@ public class Vaccines {
      *
      * @return
      */
-    public Map<String, Double> distributionAllocated() {
-        return null;
+    public Map<String, Double> distributionAllocated() {//non implementato durante l'esame
+    	Map<String, Double> propAll=new TreeMap<>();
+    	int i;
+    	double rapp;
+    	List<Range> all= this.ran.values().stream().collect(Collectors.toList());
+    	for(Range e:all) {
+    		i=0;
+    		for(String u:this.prenot.stream().collect(Collectors.toList())) {
+    			if(this.ran.get(e.getMin()).match(this.reg.get(u).getAge()))
+    				i++;
+    		}
+    		rapp=(double)i/this.prenot.size();
+    	    propAll.put(e.getInt(),rapp);
+    	}
+    	return propAll;
     }
 
     // R6
@@ -470,6 +609,6 @@ public class Vaccines {
      *
      * @param listener the listener for load errors
      */
-    public void setLoadListener(BiConsumer<Integer, String> listener) {
+    public void setLoadListener(BiConsumer<Integer, String> listener) {//non implementato durante l'esame
     }
 }

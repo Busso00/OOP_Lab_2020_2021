@@ -57,7 +57,7 @@ public final class TestApp {
     	Collection<String> people = vs.getInInterval("[70,+)");
     	
     	assertNotNull(people);
-    	System.out.print(people.size());
+    	
     	assertEquals("Missing people in interval", 3033, people.size());
     	assertEquals("Missing people in interval", 996, vs.getInInterval("[60,70)").size());
 
@@ -80,14 +80,13 @@ public final class TestApp {
     	
     	vs.setStaff("Hub 1", 7, 6, 4);
     	double capacity = vs.estimateHourlyCapacity("Hub 1");
-    	
     	assertEquals( Math.min(7*10.0, Math.min(6*12.0, 4*20.0)), capacity, 0.1);
     	vs.setStaff("Hub 2", 4, 3, 2);
     	vs.setStaff("Hub 3", 3, 3, 2);
     	
     	
     	// R3
-    	/*
+    	
     	ArrayList<String> lines=new ArrayList<>();
     	lines.add("SSN,LAST,FIRST,YEAR");
     	lines.addAll(generatePersons(10000));
@@ -101,16 +100,18 @@ public final class TestApp {
     	vs.setHours(8,8,8,8,8,6,4); // 8 hours mon to fri, 6 hours on sat and 4 hours on sun
     	
     	List<List<String>> hours = vs.getHours();
-
+    	
     	assertEquals(7,hours.size());
     	assertTrue("Every day must have at least 16 time slots", hours.stream().allMatch( d -> d.size() >= 16) );
     	assertTrue("Every day should start at 09:00", hours.stream().map( d-> d.get(0)).allMatch(s -> s.equals("09:00")) );
     	assertEquals("Overall there shoudl be 200 time slosts", 4*(8+8+8+8+8+6+4), hours.stream().mapToInt( d -> d.size()).sum() );
     	
+    
     	int av1_3 = vs.getDailyAvailable("Hub 1", 3);
     	int av1_6 = vs.getDailyAvailable("Hub 1", 6);
     	assertEquals("In hub 1 there should be 8 * 70 available places on wed", 560, av1_3);
     	assertEquals("In hub 1 there should be 4 * 70 available places on sun", 280, av1_6);
+    	//qui finisce la parte implementata in sede d'esame
     	
     	Map<String,List<Integer>> availability = vs.getAvailable();
     	assertNotNull("Missing availability", availability);
@@ -119,15 +120,15 @@ public final class TestApp {
     	assertEquals("Total available places is wrong", 6800, totalAvailable);
     	
     	// R5
+    	
     	List<String> alloc = vs.allocate("Hub 1", 1);
     	assertNotNull(alloc);
     	assertEquals("wrong number of allocated people", 70*8, alloc.size() );
     	long count_60_70 = alloc.stream().map(vs::getAge).filter(a -> a>=60 && a<70).count();
     	assertEquals("Wrong number of people in [60,70)",70*8*24/100, count_60_70);
-
     	long count_over_70 = alloc.stream().map(vs::getAge).filter(a -> a>=70).count();
     	assertEquals("Wrong number of people over 70, should be 40% + 4.8%",Math.round(70*8*0.448), count_over_70);
-
+    	
     	vs.clearAllocation();
     	List<String> alloc2 = vs.allocate("Hub 1", 1);
     	assertEquals("Should get the same result", alloc, alloc2);
@@ -171,8 +172,7 @@ public final class TestApp {
     	vs.loadPeople(sr);
     	assertEquals("Wrong number of errors", 2, errors.size());
     	assertTrue("Expected errors on lines 3,4,5 but got: " + errors.keySet(), 
-    			   errors.keySet().containsAll(Arrays.asList(3,4)));
-    			   */
+    			   errors.keySet().containsAll(Arrays.asList(3,4)));   
     }
     
     
