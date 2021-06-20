@@ -33,8 +33,8 @@ public class Vaccines {
 		public int getAge() {
 			return java.time.LocalDate.now().getYear()-this.annoN;
 		}
-		public String getPerson() {
-			return this.cFisc+","+this.cognome+","+this.annoN;
+		public String getPerson() {//avevo messo anno di nascita anziche nome
+			return this.cFisc+","+this.cognome+","+this.nome;
 		}
 		public String getCodF() {
 			return this.cFisc;
@@ -312,6 +312,12 @@ public class Vaccines {
         	throw new VaccineException();
         while(( riga=br.readLine())!= null) {
 			temp=riga.split(",");
+			//Aggiunta
+			if(temp.length<4)
+				continue;
+			if(this.reg.containsKey(temp[0]))
+				continue;
+			//fine aggiunta
 			if(this.addPerson(temp[2], temp[1],  temp[0],Integer.parseInt(temp[3]))) //qui avevo invertito temp[0] e temp[2]
 				n++;
 		}
