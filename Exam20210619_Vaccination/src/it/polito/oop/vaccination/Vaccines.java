@@ -311,21 +311,22 @@ public class Vaccines {
         if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
         	throw new VaccineException();
         while(( riga=br.readLine())!= null) {
-			temp=riga.split(",");
-			//Aggiunta
+			temp=riga.split(",");//Aggiunta
 			if(temp.length<4)
 				continue;
 			if(this.reg.containsKey(temp[0]))
-				continue;
-			//fine aggiunta
+				continue;//fine aggiunta
 			if(this.addPerson(temp[2], temp[1],  temp[0],Integer.parseInt(temp[3]))) //qui avevo invertito temp[0] e temp[2]
 				n++;
 		}
     	}else {
     		int i=1;
-    		if(!br.readLine().equals("SSN,LAST,FIRST,YEAR"))
-            	throw new VaccineException();
-            while(( riga=br.readLine())!= null) {
+    		riga=br.readLine();
+    		if(!(riga.equals("SSN,LAST,FIRST,YEAR"))) {
+    			this.listener.accept(i, riga);
+    			throw new VaccineException();
+    		}
+            while((riga=br.readLine())!= null) {
             	i++;
     			temp=riga.split(",");
     			if(temp.length<4) {
